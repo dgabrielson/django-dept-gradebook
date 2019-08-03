@@ -1,0 +1,21 @@
+# https://www.digitalocean.com/community/tutorials/how-to-configure-a-linux-service-to-start-automatically-after-a-crash-or-reboot-part-1-practical-examples
+
+[Unit]
+Description=Gradebook Score Padding
+Requires=postgresql.service
+
+
+[Service]
+ExecStartPre=/bin/sleep 1
+ExecStart=/usr/local/sbin/django-admin \
+    gradebook gb2.score.pad \
+    --logfile /var/log/gradebook-score-pad.log \
+    --pidfile /var/run/gradebook-score-pad.pid \
+    --repeat --delay 5 --verbosity 2
+Type=simple
+PIDFile=/var/run/gradebook-score-pad.pid
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
