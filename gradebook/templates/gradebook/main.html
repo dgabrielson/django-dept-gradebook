@@ -1,0 +1,54 @@
+{% extends 'gradebook/base.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}Gradebook{% endblock %}
+{% block content_title %}Gradebook{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+{% regroup available_role_list by get_role_display as role_list %}
+{% for rolegrp in role_list %}
+    <p>
+        {% if rolegrp.grouper|lower != "student" %}
+            You have access to the following section{{ rolegrp.list|pluralize }}
+            as a{% if rolegrp.grouper == 'Instructor' %}n{% endif %} {{ rolegrp.grouper }}:
+        {% endif %}
+        <ul class="simple">
+            {% for role in rolegrp.list %}
+                <li>
+                    <a href="{% url ViewportLanding.url_name viewport=role.viewport.slug %}">
+                        {{ role.viewport }}
+                        &raquo;
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </p>
+{% endfor %}
+
+
+{% if not available_role_list %}
+<p>
+    You do not have any sections available at this time.
+    If you feel this is an error, you should contact
+    your <strong>instructor</strong>.
+</p>
+{% comment %}
+<p>
+    Maybe your class requires you to
+    <a href="{% url 'students-register-start' %}">
+        complete an honesty declaration
+    </a>
+    first?
+</p>
+{% endcomment %}
+{% endif %}
+
+{% endblock %}
+
+
+
+{# ########################################### #}

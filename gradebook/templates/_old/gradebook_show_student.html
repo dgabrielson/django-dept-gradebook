@@ -1,0 +1,133 @@
+{% extends 'gradebook_base.html' %}
+
+{% load student_tags %}
+
+{# ########################################### #}
+
+{% block page_title %}Gradebook: Show Student Scores: {{ student.Name }} {% endblock %}
+{% block title %}Student Scores: {{ student.Name }}{% endblock %}
+
+{# ########################################### #}
+
+
+{% block gradebook_navigation_extra %}
+    {% if 'statsportal-sso' in selected_section|requirement_list %}
+        <br>
+        <br>
+        <a href="{% url 'statsportal-launch' %}">
+            Go to StatsPortal
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block gradebook_extra_info %}
+
+{% include 'includes/rightbar_begin.html' with title="Student info" %}
+<table>
+    <tr>
+        <th align="right">Std Num</th>
+        <td align="left">{{ student.student_number }}</td>
+    </tr>
+    <tr>
+        <th align="right">UMnetID</th>
+        <td align="left">{{ student.person.username }}</td>
+    </tr>
+    {% if iclicker_list %}
+        {% for iclicker in iclicker_list %}
+            <tr>
+                <th align="right">iclicker</th>
+                <td align="left">{{ iclicker.iclicker_id }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+    {% with email=student.get_email_address %}
+        {% if email %}
+            <tr>
+                <th align="right">Email</th>
+                <td align="left"><a href="mailto:{{ email }}">{{ email }}</a></td>
+            </tr>
+        {% endif %}
+    {% endwith %}
+    <tr>
+        <th align="right">Section</th>
+        <td align="left">{{ selected_section.course.label }} {{ selected_section.section_name }} </td>
+    </tr>
+    {% if selected_section.instructor %}
+    <tr>
+        <th align="right">Instructor</th>
+        <td align="left">
+            {% with url=selected_section.Instructor.get_absolute_url %}
+                {% if url %}
+                    <a href="{{ url }}">{{ selected_section.instructor }}</a>
+                {% else %}
+                    {{ selected_section.instructor }}
+                {% endif %}
+            {% endwith %}
+        </td>
+    </tr>
+    {% endif %}
+</table>
+{% include 'includes/rightbar_end.html' %}
+
+{% endblock %}
+
+
+{# ########################################### #}
+
+
+{% block content %}
+
+<center>
+
+{% if object_list or lettergrade %}
+    <table>
+        <tr>
+            <th align="left">Name</th>
+            <th align="left">Score</th>
+            <th align="left">Out of</th>
+        </tr>
+    {% if lettergrade %}
+        <tr>
+            {% if can_view_student_list %}
+                <td><a href="{% url 'gradebook-show-lettergrades' %}">Final Letter Grade</a></td>
+            {% else %}
+                <td>Final Letter Grade</td>
+            {% endif %}
+            <td>{{ lettergrade.lettergrade }}</td>
+            <td>{{ lettergrade.comments }}</td>
+        </tr>
+    {% endif %}
+
+    {% for score in object_list %}
+
+        <tr>
+            {% if can_view_student_list %}
+                <td> <a href="{% url 'gradebook-show-task' score.Instance.id %}">{{ score.Instance.Name }}</a>    </td>
+            {% else %}
+                <td>{{ score.Instance.Name }}</td>
+            {% endif %}
+            <td>
+            {% include 'gradebook/fragment_score_display.html' %}
+            </td>
+
+            <td>{{ score.Instance.Full_Marks|floatformat:2 }} </td>
+        </tr>
+
+    {% endfor %}
+    </table>
+{% else %}
+    There are no scores at this time.
+{% endif %}
+
+</center>
+
+{% if show_course_select %}
+    <p>
+        <a href="{% url 'gradebook-clear-section' %}">&larr; Select another course</a>
+    </p>
+{% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}

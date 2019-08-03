@@ -1,0 +1,93 @@
+{% extends 'gradebook/task_form.html' %}
+{% load static %}
+{% load gradebook_tags %}
+
+{# ########################################### #}
+
+{% block page_title %}Formulas explained{% endblock %}
+{% block content_title %}Formulas explained{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% if kwargs.task %}
+        {% url FormulaList.url_name viewport=selected_viewport.slug task=kwargs.task as page_url %}
+    {% else %}
+        {% url FormulaList.url_name|add:'-create' viewport=selected_viewport.slug as page_url %}
+    {% endif %}
+    {% if page_url and current_role in FormulaList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Formulas</a>
+        {% else %}
+            Formulas
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+<p>
+    Which formulas are available for a particular task depend on how that
+    task is named.
+</p>
+<p>
+    Names can be upper or lower case or any combination, and you can always
+    use spaces instead of dashes.
+    Symbols will be ignored.
+    For example,
+    &ldquo;i&gt;clicker total&rdquo; and &ldquo;Iclicker Total&rdquo;
+    will be treated the same in terms of available formulas.
+</p>
+<p>
+    Additionally, these names only need to match the first part of
+    the task name.
+    So &ldquo;Midterm 1&rdquo; and &ldquo;Midterm 2&rdquo; would have
+    all of the formulas available under &ldquo;Midterm&rdquo;
+    in this list.
+</p>
+
+{% regroup object_list by applies_to as formula_groups %}
+
+    {% for grp in formula_groups %}
+        <p>
+            {% if grp.grouper %}
+                Task name:
+                {% if grp.grouper|slice:":8" == 'iclicker' %}
+                    <strong>i&gt;clicker {{ grp.grouper|slice:"8:"|unslugify|title }}</strong>.
+                {% else %}
+                    <strong>{{ grp.grouper|unslugify|title }}</strong>.
+                {% endif %}
+                Available formula{{ grp.list|pluralize }}:
+            {% else %}
+                {% if grp.list|length > 1 %}
+                    These formulas are
+                {% else %}
+                    This formula is
+                {% endif %}
+                available for any task:
+            {% endif %}
+
+            <ul class="simple">
+                {% for formula in grp.list %}
+                    <li>
+                        {{ formula.short_description }}{% if formula.long_description %}:
+                            {{ formula.long_description }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </p>
+    {% endfor %}
+
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content_breadcrumbs %}
+{% endblock %}
+
+{# ########################################### #}

@@ -1,0 +1,87 @@
+{% extends 'gradebook_action_after-final-exam.html' %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+{% endblock %}
+
+{# ########################################### #}
+
+
+{% block action_area %}
+
+<script type="text/javascript">
+$(document).ready(function() 
+{ 
+		// The function that polls for progress
+		function pull() {
+		// I use $.ajax. getJSON seems to cache the last data on ie6. Firefox work tho.
+		$.ajax ({
+			type: "GET",
+			url: "{% url 'gradebook-compute-final-progress' %}",
+			dataType: "json",
+			cache: false, // VITAL line: the getJON func does not prevent caching!
+			success: updater // This function when ajax call completes.
+		})
+		}
+
+		// Func to use the data fetched
+		function updater( data, success ) 
+		{
+		    $("#gradebook-throbber").show();  // Show the throbber
+
+			if (data) {
+				if (data.done) 
+				{
+				    // If done flag sent, say so.
+					$("#gradebook-throbber").hide();    // Hide the throbber
+					$("#gradebook-finished").show();    // Show finished info.
+					txt = "";
+				} 
+				else 
+				{ 
+				    // still busy - start again in 1 seconds:
+					window.setTimeout( pull, 1000 );
+					txt = "" + data.progress;
+				}
+				$('#gradebook-progress-msg').text( txt );
+			}
+		} // end updater
+
+		// You can start it automagically like this:
+		//$('#gradebook-ajax-result').load("{% url 'gradebook-compute-final-start' %}");
+		
+		//Or with an anchor
+		$("#gradebook-begin").click(function() 
+		{
+				$(this).hide(); // Hide the anchor
+				// Call begin calculation
+				$('#gradebook-ajax-result').load("{% url 'gradebook-compute-final-start' %}");
+				// Start the pull function in 0.2 second:
+				window.setTimeout( pull, 200);
+		});
+			
+}); //end ready
+</script>
+
+{% if action_title %}
+<h1>{{ action_title }}</h1>
+{% endif %}
+
+
+<a id="gradebook-begin" href="#">&rarr; Begin Calculating Final Grades</a>
+<div id="gradebook-ajax-result">
+    <div id="gradebook-throbber" style="text-align:center;display:none"><img src="{{ STATIC_URL }}gradebook/img/ajax-loader.gif" alt="progress indicator"></div>
+    </div>
+<div id="gradebook-progress-msg"></div>
+<div id="gradebook-finished" style="display:none">
+    <p> You may want to <a href="{% url 'gradebook-show-lettergrades' %}">look over the letter grades</a>
+        for your students and double check that everything is okay.
+        </p>
+</div>
+
+{% endblock %}
+
+{# ########################################### #}

@@ -1,0 +1,87 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Task list{% endblock %}
+{% block content_title %}Task list{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    <span class="divider">&gt;</span>
+    {% url TaskList.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url %}
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Tasks</a>
+        {% else %}
+            Tasks
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+{% if current_role in TaskList.role_restrictions %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Full marks</th>
+            <th>Visible</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for task in object_list %}
+        <tr>
+            <td>
+                {% if current_role in ScoreList.role_restrictions %}
+                    <a href="{% url ScoreList.url_name viewport=selected_viewport.slug task=task.slug %}">
+                        {{ task.name }}
+                    </a>
+                    {% comment %}
+                    {% if current_role in TaskDetail.role_restrictions %}
+                    &nbsp;&nbsp;
+                    <sup>
+                        <a href="{% url TaskDetail.url_name viewport=selected_viewport.slug task=task.slug %}">
+                            [info]
+                        </a>
+                    </sup>
+                    {% endif %}
+                    {% endcomment %}
+                {% else %}
+                    {{ task.name }}
+                {% endif %}
+            </td>
+            <td>{{ task.category }}</td>
+            <td>{{ task.full_marks }}</td>
+            <td>
+                {% if task.is_public %}
+                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                {% else %}
+                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <td colspan="3">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            ({{ object_list.count }} tasks)
+        </td>
+    </tfoot>
+</table>
+{% endif %}
+
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

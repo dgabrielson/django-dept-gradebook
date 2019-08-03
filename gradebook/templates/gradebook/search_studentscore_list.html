@@ -1,0 +1,43 @@
+{% extends './studentscore_list.html' %}
+
+{# ########################################### #}
+
+{% block content_breadcrumbs %}
+<ul class="pagenav">
+    <li>
+        <a href="{% url ViewportLanding.url_name viewport=selected_viewport.slug %}">
+            &laquo; {{ selected_viewport }}
+        </a>
+    </li>
+    {% if current_role in StudentSearchFormView.role_restrictions %}
+        <li>
+            <a href="{% url StudentSearchFormView.url_name viewport=selected_viewport.slug %}">
+                student search
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in StudentSearchScoreEditList.role_restrictions and current_role != 'student' %}
+        <li>
+            <a href="{% url StudentSearchScoreEditList.url_name viewport=selected_viewport.slug role_viewport_id=student_role.viewport_id pk=student_role.person.pk %}">
+                edit scores
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content_studentinfo %}
+<tr>
+    <th>
+        Section
+    </th>
+    <td>
+        {{ student_role.viewport }}
+    </td>
+</tr>
+{{ block.super }}
+{% endblock %}
+
+{# ########################################### #}

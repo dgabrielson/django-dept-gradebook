@@ -1,0 +1,20 @@
+{% extends 'gradebook_action_generic.html' %}
+
+
+{# ########################################### #}
+
+{% block action_area_extras %}
+
+{% if delegation_list %}
+    <h1>Or Choose an Existing Delegation:</h1>
+    <ol>
+    {% for delegate in delegation_list %}
+        <li><a href="{% url 'gradebook-delegation-edit' id=delegate.id %}">{{ delegate }}</a></li>
+    {% endfor %}
+    </ol>
+{% endif %}
+
+
+{% endblock %}
+
+{# ########################################### #}

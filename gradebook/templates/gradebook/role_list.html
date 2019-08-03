@@ -1,0 +1,98 @@
+{% extends 'gradebook/access_settings.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Access settings - Roles{% endblock %}
+{% block content_title %}Access settings - Roles{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url RoleListView.url_name viewport=selected_viewport.slug role_viewport=role_viewport as page_url %}
+    {% if page_url and current_role in RoleListView.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">{{ role_viewport_object }}</a>
+        {% else %}
+            {{ role_viewport_object }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+<link href="{% static 'css/forms.css' %}" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+{# not a form -- just looks like one #}
+    <div class="form-container">
+        <table class="table-form formset">
+            <thead>
+                <tr class="table-formset-header">
+                    <td></td>
+                    <th>
+                        <label>Person</label>
+                    </th>
+                    <th>
+                        <label>Role</label>
+                    </th>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in object_list %}
+                    <tr>
+                        <td class="row-midrule-after" title="edit">
+                            {% if role.role in editable_roles %}
+                            <form action="{% url RoleUpdateView.url_name viewport=selected_viewport.slug role_viewport=role_viewport pk=role.pk %}">
+                                <button class="update">
+                                    <img alt="edit" src="{% static "img/icons/three-bars.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td class="row-midrule-after">
+                            {{ role.person }}
+                        </td>
+                        <td class="row-midrule-after">
+                            {{ role.get_role_display }}
+                        </td>
+                        <td class="row-midrule-after" title="delete">
+                            {% if role.role in editable_roles %}
+                            <form action="{% url RoleDeleteView.url_name viewport=selected_viewport.slug role_viewport=role_viewport pk=role.pk %}">
+                                <button class="delete">
+                                    <img alt="delete" src="{% static "img/icons/trashcan.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor  %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td title="add">
+                        <form action="{% url RoleCreateView.url_name viewport=selected_viewport.slug role_viewport=role_viewport %}">
+                            <button class="create">
+                                <img alt="add" src="{% static "img/icons/plus.svg" %}" style="width:1em; vertical-align:bottom;">
+                            </button>
+                        </form>
+                    </td>
+                    <td colspan="3"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+{% endblock %}
+
+
+{# ########################################### #}

@@ -1,0 +1,7 @@
+include LICENSE.txt
+include requirements.txt
+recursive-include gradebook/static *
+recursive-include gradebook/templates *
+
+# added by check_manifest.py
+recursive-include gradebook *.txt

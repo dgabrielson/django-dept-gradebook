@@ -1,0 +1,30 @@
+{% extends "students/__base.html" %}
+
+
+{% block page_title %}Statistics Gradebook{% endblock %}
+
+{% block content_title %}Statistics Gradebook{% endblock %}
+
+
+{% block content %}
+
+    <p>
+        Your marks for this class will be posted on the 
+        <a href="/gradebook" target="_blank">Statistics Gradebook</a>.
+        (You may want to bookmark the gradebook page.)
+    </p>
+
+    <form action="." method="POST">{% csrf_token %}
+        <table class="table-form">
+            {{ form.as_table }}
+            <tr class="submit-row"><td colspan="2">
+            <input type="submit" value="Next">
+        </td></tr>
+        </table>
+    </form>
+
+
+
+{% endblock %}
+
+

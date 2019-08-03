@@ -1,0 +1,17 @@
+{% extends 'gradebook/role_form.html' %}
+{% load static %}
+{# ########################################### #}
+
+{% block page_title %}Add New Role{% endblock %}
+{% block content_title %}Add a New Role{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Add Role{% endblock %}
+
+{# ########################################### #}
+
+{% block head_jquery %}{% endblock %}
+{# head jQuery conflicts with form jQuery / django-select2 #}
+{# causes double select2 input fields #}
+{# /dcg 2018-May-24 #}

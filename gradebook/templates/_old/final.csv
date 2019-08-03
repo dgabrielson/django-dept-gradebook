@@ -1,0 +1,3 @@
+Name,UMnetID,Student Number,{% for header in headers %}"{{ header|safe }}",{% endfor %}
+{% for item in student_scores %}"{{ item.Student }}",{{ item.Student.person.username }},{{ item.Student.student_number }},{% for score in item.Scores %}{{ score.Score|floatformat:2 }},{% endfor %}
+{% endfor %}

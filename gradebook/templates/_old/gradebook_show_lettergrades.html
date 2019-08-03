@@ -1,0 +1,50 @@
+{% extends 'gradebook_base.html' %}
+
+{# ########################################### #}
+
+
+{% block page_title %}Gradebook: Show Final Letter Grades{% endblock %}
+{% block title %}{% if can_set_cutoffs %}<a href="{% url 'gradebook-lettergrades-edit' %}">Final Letter Grades</a>{% else %}Final Letter Grades{% endif %}{% endblock %}
+
+
+{# ########################################### #}
+
+
+
+
+{# ########################################### #}
+
+
+{% block content %}
+
+<center>
+<table>
+    <tr>
+        <th align="left">Student Name</th>
+        <th align="left">Student Number</th>
+        <th align="left">Letter Grade</th>
+        <th align="left">Comment</th>
+    </tr>
+{% for student, lettergrade in object_list %}
+
+    <tr>
+        <td> <a href="{% url 'gradebook-show-student' student.person.username %}">{{ student }}</a></td>
+        <td>{{ student.student_number  }} </td>
+        <td>{{ lettergrade.lettergrade }} </td>
+        <td>{{ lettergrade.comments }} </td>
+    </tr>
+
+{% endfor %}
+</table>
+</center>
+
+{% if can_set_cutoffs %}
+    <p>
+        <a href="{% url 'gradebook-aurora-upload' %}">&rarr; Instructions for uploading final grades to Aurora</a>
+    </p>
+{% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}

@@ -1,0 +1,154 @@
+{% extends 'gradebook/base.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}{{ selected_viewport }}{% endblock %}
+{% block content_title %}{{ selected_viewport }}{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    <span class="divider">&gt;</span>
+    {% url ViewportLanding.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in ViewportLanding.role_restrictions %}
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">{{ selected_viewport }}</a>
+        {% else %}
+            {{ selected_viewport }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+<p>
+    Welcome, {{ selected_role.person.given_name }}.
+    You are a{% if selected_role.label == 'instructor' %}n{% endif %} {{ selected_role.label }} in this course.
+</p>
+
+{# ########################################### #}
+
+<ul class="pagenav">
+    <li>
+        <strong>View</strong>
+    </li>
+    {% if current_role == 'student' %}
+        <li>
+            <a href="{% url 'gradebook2-student-score-list' viewport=selected_viewport.slug %}">
+                Scores &raquo;
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in TaskList.role_restrictions %}
+        <li>
+            <a href="{% url TaskList.url_name viewport=selected_viewport.slug %}">
+                tasks
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'gradebook2-studentregistration-list' viewport=selected_viewport.slug %}">
+                students
+            </a>
+        </li>
+    {% endif %}
+
+</ul>
+
+{% if current_role != 'student' %}
+{% if current_role in StudentSearchFormView.role_restrictions %}
+<ul class="pagenav">
+    <li>
+        <strong>Search</strong>
+    </li>
+    {% if current_role in StudentSearchFormView.role_restrictions %}
+        <li>
+            <a href="{% url StudentSearchFormView.url_name viewport=selected_viewport.slug %}">
+                students
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endif %}
+{% if current_role in SpreadsheetExportFormView.role_restrictions %}
+<ul class="pagenav">
+    <li>
+        <strong>Download</strong>
+    </li>
+    {% if current_role in SpreadsheetExportFormView.role_restrictions %}
+        <li>
+            <a href="{% url SpreadsheetExportFormView.url_name viewport=selected_viewport.slug %}">
+                marks
+            </a>
+        </li>
+    {% endif %}
+
+</ul>
+{% endif %}
+
+{% if current_role in BubblesheetUploadForm.role_restrictions or current_role in ClasslistUploadForm.role_restrictions or current_role in IClickerUploadForm.role_restrictions or MarksUploadWizardView.role_restrictions %}
+<ul class="pagenav">
+    <li>
+        <strong>Upload</strong>
+    </li>
+    {% if current_role in IClickerUploadForm.role_restrictions %}
+        <li>
+            <a href="{% url IClickerUploadForm.url_name viewport=selected_viewport.slug %}">
+                <span style="text-transform:none;">i&gt;clicker</span> responses
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in MarksUploadWizardView.role_restrictions %}
+        <li>
+            <a href="{% url MarksUploadWizardView.url_name viewport=selected_viewport.slug %}">
+                marks
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in BubblesheetUploadForm.role_restrictions %}
+        <li>
+            <a href="{% url BubblesheetUploadForm.url_name viewport=selected_viewport.slug %}">
+                bubblesheet data
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in ClasslistUploadForm.role_restrictions %}
+        <li>
+            <a href="{% url ClasslistUploadForm.url_name viewport=selected_viewport.slug %}">
+                classlist
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endif %}
+
+{% if current_role in AccessSettingsView.role_restrictions or current_role in AllTaskList.role_restrictions %}
+<ul class="pagenav">
+    <li>
+        <strong>Manage</strong>
+    </li>
+    {% if current_role in AllTaskList.role_restrictions %}
+        <li>
+            <a href="{% url AllTaskList.url_name viewport=selected_viewport.slug %}">
+                tasks
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in AccessSettingsView.role_restrictions %}
+        <li>
+            <a href="{% url AccessSettingsView.url_name viewport=selected_viewport.slug %}">
+                access
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endif %}
+{% endif %}
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

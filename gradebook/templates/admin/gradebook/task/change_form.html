@@ -1,0 +1,12 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+{% block object-tools-items %}
+    {% if original.formula_id and perms.formula.can_change %}
+    <li>
+        <a href="{% url 'admin:gradebook_formula_change' original.formula_id %}" class="viewsitelink">
+            {% trans "View Formula" %}
+        </a>
+    </li>
+    {% endif %}
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'gradebook_action_list.html' %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+<link href="{{ STATIC_URL }}css/forms.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block page_title %}Gradebook: Actions{% endblock %}
+{% block title %}Select an action:{% endblock %}
+
+
+{# ########################################### #}
+
+
+{% block gradebook_extra_info %}
+{{ block.super }}
+
+{% if action_tag == 'upload-iclicker' %}
+    {% include 'includes/rightbar_begin.html' with title="What file to upload?" %}
+<div style="text-align: left">
+    <ul>
+    <li>On your computer, open the folder which contains your iclicker program.
+    <li>Open the folder for your course.
+    <li>Inside that folder is a folder named &ldquo;SessionData&rdquo;: open it.
+    <li>There are files in this folder named &ldquo;Lyymmddhhmm.csv&rdquo;: these are the files to upload.
+    </ul>
+</div>
+    {% include 'includes/rightbar_end.html' %}
+{% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}
+
+
+{% block action_area %}
+
+
+
+<h1>{{ action_title }}</h1>
+
+{% if form %}
+    {{ form.non_field_errors }}
+    <form enctype="multipart/form-data" action="." method="post" class="form">{% csrf_token %}
+    <table class="table-form">
+    {{ form }}
+        <tr class="submit-row">
+            <td colspan="2">
+                <input type="submit" name="{{ action_type }}" value="{{ action_type }}">
+            </td>
+        </tr>
+    </table>
+    
+    
+    </form>
+{% endif %}
+
+
+{% if form_msg %}
+    <br>
+    {% if not form_flag %}
+        <p class="errornote">{{ form_msg }}</p>
+    {% else %}
+        <p>{{ form_msg }}</p>
+    {% endif %}
+    {% if error_list %}
+        <ul>
+        {% for error in error_list %}
+            <li class="errorlist"> {{error}}
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+
+{% block action_area_extras %}
+{% endblock %}
+
+
+{% endblock %}
+
+
+{# ########################################### #}

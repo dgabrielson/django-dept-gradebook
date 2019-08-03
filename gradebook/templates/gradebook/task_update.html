@@ -1,0 +1,35 @@
+{% extends 'gradebook/task_form.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Edit Task - {{ object }}{% endblock %}
+{% block content_title %}Edit Task: {{ object }}{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Save{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+{{ block.super }}
+    {% if current_role in TaskDelete.role_restrictions %}
+    <p>
+        <div style="line-height:24pt;verticle-align:middle;">
+            <form action="{% url TaskDelete.url_name viewport=selected_viewport.slug task=object.slug %}">
+                <div style="float:left; overflow:hidden;">
+                    <button class="delete">
+                        <img alt="delete" src="{% static "img/icons/trashcan.svg" %}" style="width:1em; vertical-align:middle;">
+                    </button>
+                </div>
+                <span style="padding-left: 1em;">
+                    Delete this task
+                </span>
+            </form>
+        </div>
+    </p>
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}

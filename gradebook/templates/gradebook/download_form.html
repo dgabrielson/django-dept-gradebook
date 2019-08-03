@@ -1,0 +1,19 @@
+{% extends 'gradebook/upload_form.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}DOWNLOAD form{% endblock %}
+{% block content_title %}DOWNLOAD form{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Download{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+{% block form_pre_content %}
+{% endblock form_pre_content %}
+{{ block.super }}
+{% block form_post_content %}{% endblock %}
+{% endblock content %}

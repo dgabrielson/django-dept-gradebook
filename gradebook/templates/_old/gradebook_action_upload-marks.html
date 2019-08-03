@@ -1,0 +1,20 @@
+{% extends 'gradebook_action_generic.html' %}
+
+{# ########################################### #}
+
+{% block action_area_extras %}
+
+<ul>
+    <li>The file you are uploading must be a spreadsheet.
+        Support formats are: CSV, Microsoft Excel (both XLS and XLSX) and OpenOffice ODS.
+    <li>The file needs one line of headers.
+    <li>The headers must contain at least one valid ID field:
+        {% for header in id_headers %}
+            {{ header }}{% if not forloop.last %}, {% else %}.{% endif %}
+        {% endfor %}
+        The ID header is case-insensitve.
+        (More than one ID field is okay.)
+    <li>The file <strong>must not</strong> have any information other than marks and a header line.
+</ul>
+
+{% endblock %}

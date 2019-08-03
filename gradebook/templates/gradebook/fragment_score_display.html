@@ -1,0 +1,29 @@
+{# This fragment requires a context of:                             #}
+{#   * a Student_Score object named score, and                      #}
+{#   * two boolean permissions: can_create_score, can_edit_score.   #}
+
+
+{# NOTE: the score.id should not ever be needed,  #}
+{# but observationally this has happened...       #}
+
+{% if score.Score == NoScore or score.id == 0 %}
+    {% if can_create_score %}
+        <a href="{% url 'gradebook-create-score' task_id=score.Instance.id username=score.Student.person.username %}">NS</a>
+    {% else %}
+        NS
+    {% endif %}
+{% else %}
+    {% if score.computed %}
+        {% if can_create_score %}
+            <a href="{% url 'gradebook-create-score' task_id=score.Instance.id username=score.Student.person.username %}">{{ score.Score|floatformat:"2" }}</a>
+        {% else %}
+            {{ score.Score|floatformat:"2" }}
+        {% endif %}
+    {% else %}
+        {% if can_edit_score %}
+            <a href="{% url 'gradebook-edit-score' score.id %}">{{ score.Score|floatformat:"2" }}</a>
+        {% else %}
+            {{ score.Score|floatformat:"2" }}
+        {% endif %}
+    {% endif %}
+{% endif %}

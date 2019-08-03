@@ -1,0 +1,87 @@
+{% extends 'gradebook_base.html' %}
+
+{% block html_head %}
+{{ block.super }}
+{% if form %}
+{{ form.media }}
+{% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_title %}Gradebook{% endblock %}
+{% block title %}Gradebook{% endblock %}
+
+{# ########################################### #}
+
+{% block gradebook_extra_info %}
+
+{% if selected_section %}
+    {% include 'includes/rightbar_begin.html' with title="Current Course" %}
+    <div id="class-info">
+        <p>{{ selected_section }}</p>
+        <p>CRN: <span id="class-info-crn">{{ selected_section.crn }}</span></p>
+        {% if enrollment_count > 0 %}<p>Registration count: {{ enrollment_count }} student{{ enrollment_count|pluralize }}
+</p>{% endif %}
+    </div>
+    {% include 'includes/rightbar_end.html' %}
+
+{% endif %}
+
+{% endblock %}
+
+{# ########################################### #}
+{# http://www.djangosnippets.org/snippets/895/ #}
+
+{% block content %}
+
+{% if sections %}
+
+    <form enctype="multipart/form-data" action="." method="post" id="section-select-form">{% csrf_token %}
+        <center>
+           <input type="hidden" name="section-select-form">
+           {{ form.as_table }}
+        </center>
+    </form>
+    
+        {% if selected_section %}
+            <br><hr><br>
+            <div id="main-actions">
+                <center>
+                {% if using_iclicker %}
+                    <a href="{% url 'gradebook-do-action' 'upload-iclicker' %}">Upload i&gt;clicker grades</a>
+                    |
+                {% endif %}
+                    <a href="{% url 'gradebook-action-list' %}">Perform an action</a>
+                </center>
+            </div>
+
+            {% if assignment_list %}
+                <div id="assignment-list">
+                    <br>
+                    <p>Available tasks:</p>
+                    <ul>
+                        {% if lgfs %}
+                            <li><a href="{% url 'gradebook-show-lettergrades' %}">Letter grades</a></li>
+                        {% endif %}
+                        {% for assignment in assignment_list %}
+                            <li><a href="{% url 'gradebook-show-task' id=assignment.id %}">{{ assignment }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endif %}
+    </form>
+
+{% else %}
+
+    <p class="errornote">There are no courses available.</p>
+    <p> STAT 1000 and 2000 students: Have you 
+        <a href="{% url 'students-register-start' %}">registered with the Statistics Department</a>? </p>
+
+{% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}

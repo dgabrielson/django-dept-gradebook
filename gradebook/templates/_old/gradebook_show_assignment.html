@@ -1,0 +1,68 @@
+{% extends 'gradebook_base.html' %}
+
+{# ########################################### #}
+
+
+{% block page_title %}Gradebook: Show {{ task.Category.Type }} Scores: {{ task }}{% endblock %}
+{% block title %}{% if can_edit_task %}<a href="{% url 'gradebook-edit-task' task.id %}">{{ task }}</a>{% else %}{{ task }}{% endif %}{% endblock %}
+
+
+{# ########################################### #}
+
+
+{% block gradebook_extra_info %}
+
+{% include 'includes/rightbar_begin.html' with title=task.Category.Type %}
+<strong>Maximum Points available:</strong> {{ task.Full_Marks }}<br>
+<a href="{% url 'gradebook-task-stats' task.id %}">[statistics]</a>
+{% include 'includes/rightbar_end.html' %}
+
+{% endblock %}
+
+
+{# ########################################### #}
+
+
+{% block content %}
+<p>
+    <a href="{% url 'gradebook-main' %}">&larr; Back to the task list</a>
+</p>
+{% if can_edit_all_scores %}
+<p>
+    <a href="{% url 'gradebook-edit-scores' task.id %}">&rarr; Edit scores</a>
+</p>
+{% endif %}
+
+<center>
+<table>
+    <tr>
+        <th align="left">Student Name</th>
+        <th align="left">Student Number</th>
+        <th align="left">{{ task.Category.Type }} Score</th>
+    </tr>
+    
+{% for score, can_create_score, can_edit_score in object_list %}
+
+    <tr>
+        {% with student=score.Student %}
+            <td>
+                <a href="{% url 'gradebook-show-student' student.person.username %}">
+                    {{ student }}
+                </a>   
+            </td>
+            <td>{{ student.student_number  }} </td>
+        {% endwith %}
+        <td>
+        {% include 'gradebook/fragment_score_display.html' %}
+        </td>
+
+    </tr>
+
+{% endfor %}
+</table>
+</center>
+
+{% endblock %}
+
+
+{# ########################################### #}

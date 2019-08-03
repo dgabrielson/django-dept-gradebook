@@ -1,0 +1,80 @@
+{% extends 'gradebook/base.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}{{ object }}{% endblock %}
+{% block content_title %}{{ object }}{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+<h2>Task detail</h2>
+
+<ul class="pagenav">
+    {% if current_role in TaskList.role_restrictions %}
+        <li>
+            <a href="{% url TaskList.url_name viewport=selected_viewport.slug %}">
+                &laquo; {{ selected_section }} task list
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in ScoreList.role_restrictions %}
+        <li>
+            <a href="{% url ScoreList.url_name viewport=selected_viewport.slug task=object.slug %}">
+                score list
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in TaskUpdate.role_restrictions %}
+        <li>
+            <a href="{% url TaskUpdate.url_name viewport=selected_viewport.slug task=object.slug %}">
+                edit task
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+<table>
+    <tbody>
+        <tr>
+            <th>
+                Category
+            </th>
+            <td>
+                {{ object.category }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Visible to students
+            </th>
+            <td>
+                {% if object.is_public %}
+                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                {% else %}
+                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Full marks
+            </th>
+            <td>
+                {{ object.full_marks }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p></p>
+
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

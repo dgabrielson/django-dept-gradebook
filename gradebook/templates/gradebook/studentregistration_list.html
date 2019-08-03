@@ -1,0 +1,74 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Student list{% endblock %}
+{% block content_title %}Student list{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url StudentRegistrationList.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in StudentRegistrationList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Students</a>
+        {% else %}
+            Students
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Student number</th>
+            <th>Standing</th>
+            <!-- <th>Notes</th> -->
+        </tr>
+    </thead>
+    <tbody>
+    {% for st_role in object_list %}
+        <tr>
+            <td>
+                {% if current_role in StudentScoreListDetail.role_restrictions %}
+                <a href="{% url StudentScoreListDetail.url_name viewport=selected_viewport.slug pk=st_role.person.pk %}">
+                    {{ st_role.person }}
+                </a>
+                {% else %}
+                    {{ st_role.person }}
+                {% endif %}
+            </td>
+            <td>{{ st_role.person.student.student_number }}</td>
+            <td>
+                {% if st_role.active %}
+                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                {% else %}
+                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                {% endif %}
+            </td>
+            <!-- <td>{{ st_role.status_msg }}</td> -->
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <td colspan="4">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            ({{ object_list.count }} students)
+        </td>
+    </tfoot>
+</table>
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

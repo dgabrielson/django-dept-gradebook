@@ -1,0 +1,60 @@
+{% extends 'gradebook/role_list.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Role form{% endblock %}
+{% block content_title %}Role form{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% if role %}
+        {% url RoleUpdateView.url_name viewport=selected_viewport.slug role_viewport=role_viewport pk=role.pk as page_url %}
+        {% if page_url and current_role in RoleUpdateView.role_restrictions %}
+            <span class="divider">&gt;</span>
+            {% if page_url != request.path %}
+                <a href="{{ page_url }}">{{ role.person }}</a>
+            {% else %}
+                {{ role.person }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% url RoleCreateView.url_name viewport=selected_viewport.slug role_viewport=role_viewport as page_url %}
+        {% if page_url and current_role in RoleCreateView.role_restrictions %}
+            <span class="divider">&gt;</span>
+            {% if page_url != request.path %}
+                <a href="{{ page_url }}">Add</a>
+            {% else %}
+                Add
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+{{ form.media }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+    <form enctype="multipart/form-data" action="" method="post" class="form">
+        {% csrf_token %}
+        <table class="table-form">
+            {% include 'includes/form.html' %}
+            <tr class="submit-row visual-break">
+                <td colspan="2">
+                    <input type="submit" value="{% block form_button %}Save{% endblock %}">
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}
+
+
+{# ########################################### #}

@@ -1,0 +1,78 @@
+{% extends 'gradebook_action_generic.html' %}
+
+{# ########################################### #}
+
+
+{% block content %}
+
+<ul>
+    <li><a href="{% url 'gradebook-action-list' %}">&larr; Back</a><br><br></li>
+<!--    <li><a href="{% url 'gradebook-rules-start' %}">Setup the rules for calculating final marks</a></li> -->
+    <li><a href="{% url 'gradebook-lettergrades-edit' %}">Set letter grade cutoffs</a></li>
+<!--    <li><a href="{% url 'gradebook-compute-final' %}">Calculate final scores</a></li> -->
+    <li><a href="{% url 'gradebook-aurora-upload' %}">Instructions for uploading final marks to Aurora</a></li>
+</ul>
+
+
+{% block action_area %}
+
+{% if action_title %}
+<h1>{{ action_title }}</h1>
+{% endif %}
+
+
+{% if form %}
+    {{ form.non_field_errors }}
+    <form enctype="multipart/form-data" action="." method="post" class="form">{% csrf_token %}
+    <table class="table-form">
+    {{ form }}
+    {{ formset }}
+    {% if action_type %}
+        <tr class="submit-row">
+            <td colspan="2">
+                <input type="submit" name="{{ action_type }}" value="{{ action_type }}">
+            </td>
+        </tr>
+    {% endif %}
+    </table>
+    
+    
+    </form>
+{% endif %}
+
+
+{% if form_msg %}
+    <br>
+    {% if not form_flag %}
+        <p class="errornote">{{ form_msg }}</p>
+    {% else %}
+        <p>{{ form_msg }}</p>
+    {% endif %}
+    {% if error_list %}
+        <ul>
+        {% for error in error_list %}
+            <li class="errorlist"> {{error}}
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+
+{% endblock %}
+
+
+{% if rule_list %}
+    <h1>Select a Rule:</h1>
+    <ol>
+    {% for rule in rule_list %}
+        <li><a href="{% url 'gradebook-rule-edit' model=rule.content_type.model id=rule.id %}">{{ rule.target_name }}</a></li>
+    {% endfor %}
+    </ol>
+    (Rules will be applied in this order.)
+{% endif %}
+
+{% endblock %}
+
+
+
+{# ########################################### #}

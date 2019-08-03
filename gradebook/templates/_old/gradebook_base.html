@@ -1,0 +1,36 @@
+{% extends 'site_base.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}{% endblock %}
+
+{# ########################################### #}
+
+{% block page_content_header %}{% block title %}{% endblock %}{% endblock %}
+{% block page_content_body %}
+
+{% block content %}
+{% endblock %}
+
+
+{% endblock page_content_body %}
+
+
+{# ########################################### #}
+
+{% block page_right_sidebar %}
+
+{% block gradebook_extra_info %}
+{% endblock %}
+
+{{ block.super }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block navigation_extras %}
+{{ block.super }}
+{% block gradebook_navigation_extra %}{% endblock gradebook_navigation_extra %}
+{% endblock navigation_extras %}
+
+{# ########################################### #}

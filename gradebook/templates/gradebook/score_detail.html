@@ -1,0 +1,64 @@
+{% extends 'gradebook/base.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}{{ object }}{% endblock %}
+{% block content_title %}{{ object }}{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+<ul class="pagenav">
+    {% if current_role in TaskList.role_restrictions %}
+        <li>
+            <a href="{% url TaskList.url_name section=selected_section.slug %}">
+                task list
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+<table>
+    <tbody>
+        <tr>
+            <th>
+                Category
+            </th>
+            <td>
+                {{ object.category }}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Visible to students
+            </th>
+            <td>
+                {% if object.is_public %}
+                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                {% else %}
+                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Full marks
+            </th>
+            <td>
+                {{ object.full_marks }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p></p>
+
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

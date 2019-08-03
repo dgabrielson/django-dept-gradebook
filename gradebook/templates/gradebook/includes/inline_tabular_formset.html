@@ -1,0 +1,125 @@
+{% comment %}
+    Basic inline tabular formset layout.
+    See static/js/jquery.formset.js
+    https://github.com/elo80ka/django-dynamic-formset
+{% endcomment %}{% load static %}
+{{ formset.management_form }}
+<table id="{{ formset.prefix }}-formset" class="table-form formset">
+    <thead>
+        {% if formset_header %}
+            <tr class="table-form-row-header">
+                <th colspan="{{ formset.empty_form.visible_fields|length }}">
+                    {{ formset_header }}
+                </th>
+            </tr>
+        {% endif %}
+        {% if not formset.is_valid and formset.non_form_errors%}
+            <tr class="form-errors">
+                <td colspan="{{ formset.empty_form.visible_fields|length }}">
+                    <ul class=errorlist>
+                    {% for error in formset.non_form_errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endif %}
+        <tr class="table-formset-header">
+            {% for field in formset.empty_form.visible_fields %}
+                <th>
+                    <label class="tabular-formset-label{% if not field.field.required %} optional{% endif %}">
+                        {{ field.label }}
+                    </label>
+                </th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for form in formset.forms %}
+            {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+
+            <tr id="{{ form.prefix }}-row">
+                {% for field in form.visible_fields %}
+                    <td{% if not form.instance.file %} class="row-midrule-after"{% endif %}>
+                       {% if field.errors %}
+                            <ul for="{{ field.auto_id }}" class="errorlist" id="errors-{{ field.html_name }}">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {{ field }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        {% with formset.empty_form as form %}
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        <tr id="id_{{ formset.prefix }}_template" style="display:none;">
+            {% for field in form.visible_fields %}
+                <td{% if not form.instance.file %} class="row-midrule-after"{% endif %}>
+                   {% if field.errors %}
+                        <ul for="{{ field.auto_id }}" class="errorlist" id="errors-{{ field.html_name }}">
+                            {% for error in field.errors %}
+                                <li>{{ error }}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {{ field }}
+                </td>
+            {% endfor %}
+        </tr>
+        {% endwith %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $(function() {
+        $('#{{ formset.prefix }}-formset tbody tr').formset({
+            prefix: '{{ formset.prefix }}',
+            addText: '<img src="{% static "img/icons/plus.svg" %}" style="width:0.75em; vertical-align: bottom;"> Add another {{ itemname }}',
+            deleteText: '<img src="{% static "img/icons/trashcan.svg" %}" style="width:1em; vertical-align: bottom;" alt="Delete">',
+            formTemplate: '#id_{{ formset.prefix }}_template',
+            canDelete: {{ formset.can_delete|lower }}
+        });
+    });
+</script>
+{% comment %}
+OPTIONS:
+
+``prefix``
+    Use this to specify the prefix for your formset if it's anything
+    other than the default ("form"). This option must be supplied for
+    inline formsets.
+
+``addText``
+    Use this to set the text for the generated add link. The default
+    text is "add another".
+
+``deleteText``
+    Use this to set the text for the generated delete links. The
+    default text is "remove".
+
+``addCssClass``
+    Use this to change the default CSS class applied to the generated
+    add link (possibly, to avoid CSS conflicts within your templates).
+    The default class is "add-row".
+
+``deleteCssClass``
+    Use this to change the default CSS class applied to the generated
+    delete links. The default class is "delete-row".
+
+``added``
+    If you set this to a function, that function will be called each
+    time a new form is added. The function should take a single argument,
+    ``row``; it will be passed a jQuery object, wrapping the form that
+    was just added.
+
+``removed``
+    Set this to a function, and that function will be called each time
+    a form is deleted. The function should take a single argument,
+    ``row``; it will be passed a jQuery object, wrapping the form that
+    was just removed.
+{% endcomment %}

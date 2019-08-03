@@ -1,0 +1,68 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Access settings{% endblock %}
+{% block content_title %}Access settings{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+{{ form.media }}
+{{ formset.media }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url AccessSettingsView.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in AccessSettingsView.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Manage access</a>
+        {% else %}
+            Manage access
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+    <p>
+        To setup access for a TA or Marker, please select the section from
+        the table below.
+    </p>
+
+    <form enctype="multipart/form-data" action="" method="post" class="form">{% csrf_token %}
+        <div class="form-container">
+            {% if formset.forms|length > 10 %}
+                <table class="table-form">
+                    <tr class="submit-row">
+                        <td>
+                            <input type="submit" value="Update" class="save-btn">
+                        </td>
+                    </tr>
+                </table>
+            {% endif %}
+            <table class="table-form">
+                {% include 'includes/form.html' %}
+            </table>
+            {% include './includes/inline_viewport_access.html' with itemname='section' %}
+            <table class="table-form">
+                <tr class="submit-row">
+                    <td>
+                        <input type="submit" value="Update" class="save-btn">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+
+{% endblock %}
+
+
+{# ########################################### #}

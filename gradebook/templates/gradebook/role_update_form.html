@@ -1,0 +1,41 @@
+{% extends 'gradebook/role_form.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Edit Role - {{ object }}{% endblock %}
+{% block content_title %}Edit Role{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Save{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+    <h2>{{ role.person }}</h2>
+    <p>
+        <strong>Currently:</strong>
+        {{ role.get_role_display }}
+    </p>
+{{ block.super }}
+    {% if current_role in RoleDeleteView.role_restrictions %}
+    <p>
+        <div style="line-height:24pt;verticle-align:middle;">
+            <form action="{% url RoleDeleteView.url_name viewport=selected_viewport.slug role_viewport=role_viewport pk=role.pk %}">
+                <div style="float:left; overflow:hidden;">
+                    <button class="delete">
+                        <img alt="delete" src="{% static "img/icons/trashcan.svg" %}" style="width:1em; vertical-align:middle;">
+                    </button>
+                </div>
+                <span style="padding-left: 1em;">
+                    Delete this role
+                </span>
+            </form>
+        </div>
+    </p>
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}

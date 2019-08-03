@@ -1,0 +1,61 @@
+{% extends 'gradebook_base.html' %}
+
+{# ########################################### #}
+
+
+{% block page_title %}Gradebook: {{ task }}: Statistics{% endblock %}
+{% block title %}{{ task }}: Statistics{% endblock %}
+
+
+{# ########################################### #}
+
+{% block content %}
+
+<ul class="pagenav">
+    <li>
+        <a href="{% url 'gradebook-show-task' task.id %}">&larr; Back to the scores</a>
+    </li>
+</ul>
+
+<center>
+{% with task.statistics as stats %}
+    <table>
+        <tr>
+            <th>Score Count</th>
+            <td>{{ stats.count }}</td>
+        </tr>
+        {% if stats.count > 0 %}
+        <tr>
+            <th>Minimum Score</th>
+            <td>{{ stats.min|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Maximum Score</th>
+            <td>{{ stats.max|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Average Score</th>
+            <td>{{ stats.avg|floatformat:2 }}</td>
+        </tr>
+        <tr>
+            <th>Standard Deviation</th>
+            <td>{{ stats.stddev|floatformat:2 }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">
+                (No statistics until there are scores.)
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+
+    {% if stats.count > 0 %}
+        <img src="{% url 'gradebook-task-histogram' task.id %}" alt="histogram" width="400" height="300">
+    {% endif %}
+{% endwith %}
+</center>
+
+{% endblock %}
+
+{# ########################################### #}

@@ -1,0 +1,63 @@
+{% extends 'gradebook_action_generic.html' %}
+
+{# ########################################### #}
+
+{% block action_area %}
+
+
+
+<h1>{{ action_title }} &mdash; {{ task.Name }}</h1>
+
+<table class="student-info">
+    <tr>
+        <th>Student Name</th>
+        <td>{{ student.person.cn }}</td>
+    </tr>
+    <tr>
+        <th>Student Number</th>
+        <td>{{ student.student_number }}</td>
+    </tr>
+    <tr>
+        <th>Full Marks</th>
+        <td>{{ task.Full_Marks }}</td>
+    </tr>
+</table>
+
+
+{% if form %}
+    {{ form.non_field_errors }}
+    <form enctype="multipart/form-data" action="." method="post" class="form">{% csrf_token %}
+    <table class="table-form">
+    {{ form }}
+        <tr class="submit-row">
+            <td colspan="2">
+                <input type="submit" name="{{ action_type }}" value="{{ action_type }}">
+            </td>
+        </tr>
+    </table>
+    
+    
+    </form>
+{% endif %}
+
+
+{% if form_msg %}
+    <br>
+    {% if not form_flag %}
+        <p class="errornote">{{ form_msg }}</p>
+    {% else %}
+        <p>{{ form_msg }}</p>
+    {% endif %}
+    {% if error_list %}
+        <ul>
+        {% for error in error_list %}
+            <li class="errorlist"> {{error}}
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}

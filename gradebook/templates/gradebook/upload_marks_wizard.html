@@ -1,0 +1,104 @@
+{% extends 'gradebook/base.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Upload Marks{% endblock %}
+{% block content_title %}Upload a Spreadsheet of Marks{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+{{ wizard.form.media }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url MarksUploadWizardView.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in MarksUploadWizardView.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Upload marks</a>
+        {% else %}
+            Upload marks
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+    {% if wizard_step == "0" %}
+        <h2>Step 1: Choose a spreadsheet</h2>
+    {% endif %}
+    {% if wizard_step == "1" %}
+        <h2>Step 2: Which columns?</h2>
+    {% endif %}
+    {% if wizard_step == "2" %}
+        <h2>Step 3: How do you want to save this?</h2>
+        <p>
+            Choose what you want to do with the columns you selected
+            in the last step.
+            Unless you have a good reason, you should use the defaults here.
+        </p>
+    {% endif %}
+    {% if wizard_step == "3" %}
+        <h2>Step 4: Coordinator upload</h2>
+        <p>
+            Do you want to upload marks to all sections, or just yours?
+        </p>
+    {% endif %}
+
+    <form enctype="multipart/form-data" action="" method="post" class="form">
+        {% csrf_token %}
+        <table class="table-form">
+            {{ wizard.management_form }}
+            {% if wizard.form.forms %}
+                {{ wizard.form.management_form }}
+                {% for form in wizard.form.forms %}
+                    {% include 'includes/form.html' %}
+                {% endfor %}
+            {% else %}
+                {% include 'includes/form.html' with form=wizard.form %}
+            {% endif %}
+            <tfoot>
+            <tr id="show-busy-button" class="visual-break form-row wizard-ctl">
+                <td class="left">
+                    {% if wizard.steps.prev %}
+                    <button id="back-busy-button" class="wizard-prev" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">Start over</button>
+                    {% else %}
+                    <span id="back-busy-button"></span>
+                    {% endif %}
+                </td>
+                <td class="right">
+                    <script>
+                        function busy_action()
+                        {
+                            var btn = document.getElementById('show-busy-button');
+                            var busy = document.getElementById('busy-throbber');
+
+                            btn.style.display = "none";
+                            busy.style.display = "block";
+
+                        };
+                    </script>
+                    <input onclick="busy_action();" class="wizard-next" type="submit" value="{% block form_button %}{% if wizard.steps.next %}Next{% else %}DONE{% endif %}{% endblock %}">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;">
+                    <span id="busy-throbber" style="text-align:center;text-indent:0em;display:none;"><img src="{% static 'img/busy-loader.gif' %}" alt="progress indicator"></span>
+                </td>
+            </tr>
+
+            </tfoot>
+        </table>
+    </form>
+{% endblock %}
+
+
+{# ########################################### #}

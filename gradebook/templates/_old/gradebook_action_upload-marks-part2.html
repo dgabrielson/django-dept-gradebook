@@ -1,0 +1,155 @@
+{% extends 'gradebook_action_generic.html' %}
+
+{# ########################################### #}
+
+{% block action_area %}
+
+
+
+<h1>{{ action_title }}</h1>
+
+
+{% if form %}
+    <form enctype="multipart/form-data" action="." method="post" class="form">{% csrf_token %}
+    <table class="table-form">
+
+{% if not form.is_valid and form.non_field_errors%}
+    <tr class="form-errors">
+        <td colspan="2">
+            <ul class=errorlist>
+            {% for error in form.non_field_errors %}
+                <li>
+                    {{ error }}
+                </li>
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+{% endif %}
+
+{% for hidden in form.hidden_fields %}
+    {{ hidden }}
+{% endfor %}
+
+{% comment %}
+            <tr class="table-form-row-even" style="height:1px;border:0px;margin:0px">
+            </tr>
+{% endcomment %}
+{% for field in form.visible_fields %}
+{% comment %}
+            {% if field.html_name|slice:':16' == "Save_Assignment_" %}
+            <tr class="table-form-row-even" style="height:1px;border:0px;margin:0px">
+            </tr>
+            {% endif %}
+{% endcomment %}
+    <tr class="form-row{% if field.field.widget.attrs.class %} {{ field.field.widget.attrs.class }}{% endif %} {% if field.html_name|slice:':16' == "Save_Assignment_" %}visual-break{% endif %}">
+        <th class="label">
+            <label for="{{ field.auto_id }}"{% if not field.field.required %} class="optional"{% endif %}>
+                {{ field.label }}
+            </label>
+        </th>
+        <td>
+           {% if field.errors %}
+                <ul for="{{ field.auto_id }}" class="errorlist" id="errors-{{ field.html_name }}">
+                    {% for error in field.errors %}
+                        <li>{{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {{ field }}
+            {% if field.help_text %}<br>
+                <span for="{{ field.auto_id }}" id="help-text-{{ field.html_name }}" class="help">
+                    {{ field.help_text|safe }}
+                </span>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+{% comment %}
+            <tr class="table-form-row-even" style="height:1px;border:0px;margin:0px">
+            </tr>
+{% endcomment %}
+
+{% comment %}
+    {{ form.non_field_errors }}
+
+    <form enctype="multipart/form-data" action="." method="post" class="form">{% csrf_token %}
+    <table class="table-form-tight">
+    {# form #}
+            <tr class="table-form-row-even">
+                <td style="font-size:3px">&nbsp;                  
+                </td>
+                <td>
+                </td>
+            </tr>
+        {% for field in form %}
+            {% if field.html_name|slice:':16' == "Save_Assignment_" %}
+            <tr class="table-form-row-even">
+                <td style="font-size:3px">&nbsp;                  
+                </td>
+                <td>
+                </td>
+            </tr>
+            {% endif %}
+            <tr id="row-{{ field.html_name }}" class="table-form-row-odd">
+                <th>
+                    {{ field.label_tag }}
+                </th>
+                <td>
+                    {% if field.errors %}
+                        <ul class="errorlist" id="errors-{{ field.html_name }}">
+                            {% for error in field.errors %}
+                                <li>{{ error }}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {{ field }}
+                    {% if field.help_text %}<br>
+                    <span id="help-text-{{ field.html_name }}" class="help">{{ field.help_text }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+            <tr class="table-form-row-even">
+                <td style="font-size:3px">&nbsp;                  
+                </td>
+                <td>
+                </td>
+            </tr>
+{% endcomment %}
+
+        <tr class="submit-row visual-break">
+            <td colspan="2">
+                <input type="submit" name="{{ action_type }}" value="{{ action_type }}">
+            </td>
+        </tr>
+    </table>
+    
+    
+    
+    </form>
+{% endif %}
+
+
+{% if form_msg %}
+    <br>
+    {% if not form_flag %}
+        <p class="errornote">{{ form_msg }}</p> 
+    {% else %}
+        <p>{{ form_msg }}</p>
+    {% endif %}
+{% endif %}
+
+
+
+{% if error_list %}
+    <ul>
+    {% for error in error_list %}
+        <li class="errorlist"> {{ error }}
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+
+{% endblock %}

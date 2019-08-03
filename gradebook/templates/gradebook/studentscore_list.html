@@ -1,0 +1,189 @@
+{% extends 'gradebook/studentregistration_list.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Student scores{% endblock %}
+{% block content_title %}Student scores{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% if current_role != 'student' %}
+        {% url StudentScoreListDetail.url_name viewport=selected_viewport.slug pk=student_role.person.pk as page_url %}
+    {% else %}
+        {% url StudentScoreList.url_name viewport=selected_viewport.slug as page_url %}
+    {% endif %}
+    {% if page_url and current_role in StudentScoreList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">{{ student_role.person }}</a>
+        {% else %}
+            {{ student_role.person }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content_breadcrumbs %}
+<ul class="pagenav">
+    {% if current_role in TaskList.role_restrictions %}
+        <li>
+            <a href="{% url TaskList.url_name viewport=selected_viewport.slug %}">
+                task list
+            </a>
+        </li>
+    {% endif %}
+    {% if current_role in StudentScoreEditList.role_restrictions and current_role != 'student' %}
+        <li>
+            <a href="{% url StudentScoreEditList.url_name viewport=selected_viewport.slug pk=student_role.person.pk %}">
+                edit scores
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block content %}
+
+<table>
+{% block content_studentinfo %}
+{% if current_role != 'student' %}
+    <tr>
+        <th>
+            Name
+        </th>
+        <td>
+            {{ student_role.person }}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Student number
+        </th>
+        <td>
+            {{ student_role.person.student.student_number }}
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Standing
+        </th>
+        <td>
+            {% if student_role.active %}
+                <img src="{% static 'admin/img/icon-yes.svg' %}" alt="Good">
+            {% else %}
+                <img src="{% static 'admin/img/icon-no.svg' %}" alt="Bad">
+            {% endif %}
+        </td>
+    </tr>
+{% endif %}
+{% with iclicker_list=student_role.person.student.iclicker_set.active %}
+    {% with iclicker_count=iclicker_list.count %}
+        {% if iclicker_count > 0 %}
+            <tr>
+                <th>i&gt;clicker{{ iclicker_count|pluralize }}</th>
+                <td>
+                    {% for iclicker in iclicker_list %}
+                        {{ iclicker.iclicker_id }}
+                        {% if not forloop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endif %}
+    {% endwith %}
+{% endwith %}
+{% endblock content_studentinfo %}
+</table>
+
+{% block content_legend %}
+<p>Legend:
+    <ul class="legend" style="list-style: none;">
+        {% if current_role != 'student' %}
+        <li><strong>{{ OVERRIDE_INDICATOR }}</strong> &mdash;
+            Scores that have overrides.</li>
+        {% endif %}
+        <li><strong>{{ CALC_INDICATOR }}</strong> &mdash;
+            Scores that are being recalculated.</li>
+        <li><strong>{{ NS_INDICATOR }}</strong> &mdash;
+            Empty scores (no score).</li>
+    </ul>
+</p>
+{% endblock content_legend %}
+
+{% block content_scoretable %}
+<table>
+    <thead>
+        <tr>
+            <th>Task</th>
+            <th>Score</th>
+            <th>Full marks</th>
+            {% if current_role != 'student' %}
+                <th>Visible</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for score in object_list %}
+        {% if current_role == 'student' and score.is_public %}
+            <tr>
+                <td>
+                   {{ score.task }}
+                </td>
+                <td>{{ score }}</td>
+                <td>{{ score.get_full_marks }}</td>
+            </tr>
+        {% elif current_role != "student" %}
+            <tr>
+                <td>
+                    {% if selected_viewport.pk == student_role.viewport_id and current_role in ScoreList.role_restrictions %}
+                        <a href="{% url ScoreList.url_name viewport=selected_viewport.slug task=score.task.slug %}">
+                         {{ score.task }}
+                        </a>
+                    {% else %}
+                        {{ score.task }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ score }}{% if score.formula %}{{ OVERRIDE_INDICATOR }}{% endif %}
+                </td>
+                <td>{{ score.get_full_marks }}</td>
+                <td>
+                    {% if score.is_public %}
+                        <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                    {% else %}
+                        <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content_scoretable %}
+
+
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block gradebook_extra_info %}
+
+<div class="extra-info">
+<h3>Legend</h3>
+    <ul class="legend" style="list-style: none;">
+        <li><strong>{{ OVERRIDE_INDICATOR }}</strong> &mdash;
+            Scores that have overrides.</li>
+        <li><strong>{{ CALC_INDICATOR }}</strong> &mdash;
+            Scores that are being recalculated.</li>
+        <li><strong>{{ NS_INDICATOR }}</strong> &mdash;
+            Empty scores (no score).</li>
+    </ul>
+</div>
+
+{% endblock %}
+
+{# ########################################### #}

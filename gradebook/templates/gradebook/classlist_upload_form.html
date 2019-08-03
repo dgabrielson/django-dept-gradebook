@@ -1,0 +1,23 @@
+{% extends 'gradebook/upload_form.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}Upload Classlist{% endblock %}
+{% block content_title %}Upload Classlist{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url ClasslistUploadForm.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in ClasslistUploadForm.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Upload classlist</a>
+        {% else %}
+            Upload classlist
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}

@@ -1,0 +1,23 @@
+{% extends 'gradebook/upload_form.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}Upload i&gt;clicker responses{% endblock %}
+{% block content_title %}Upload i&gt;clicker responses{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url IClickerUploadForm.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in IClickerUploadForm.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Upload i&gt;clicker</a>
+        {% else %}
+            Upload i&gt;clicker
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}

@@ -1,0 +1,30 @@
+{% extends 'gradebook_main.html' %}
+
+{# ########################################### #}
+
+
+{% block page_title %}Gradebook: Action List{% endblock %}
+{% block title %}Select an action:{% endblock %}
+
+
+{# ########################################### #}
+
+
+
+{% block content %}
+
+<ul>
+    <li><a href="{% url 'gradebook-main' %}">&larr; Back to the task list</a><br><br></li>
+    {% for perm in gradebook_perms %}
+        <li><a href="{% url 'gradebook-do-action' perm.name %}">{{ perm.description }}</a></li>
+    {% endfor %}
+</ul>
+
+
+{% block action_area %}
+{% endblock %}
+
+{% endblock %}
+
+
+{# ########################################### #}

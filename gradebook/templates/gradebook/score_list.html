@@ -1,0 +1,162 @@
+{% extends 'gradebook/task_list.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}{{ task_object }} - Score list{% endblock %}
+{% block content_title %}{{ task_object }}: Score list{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url ScoreList.url_name viewport=selected_viewport.slug task=task_object.slug as page_url %}
+    {% if page_url and current_role in ScoreList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Scores</a>
+        {% else %}
+            Scores
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block content %}
+
+<ul class="pagenav">
+    {% if current_role in ScoreEditList.role_restrictions %}
+        <li>
+            <a href="{% url ScoreEditList.url_name viewport=selected_viewport.slug task=task %}">
+                edit scores
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+{% if current_role != 'student' %}
+
+{% if task_object.formula %}
+<p>
+    Computed Score. Formula is {{ task_object.formula.get_type_display }}.
+</p>
+{% endif %}
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Student number</th>
+            <th>Score</th>
+            <th>Full marks</th>
+            <th>Visible</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for score in object_list %}
+        <tr>
+            <td>
+                {% if current_role in StudentScoreListDetail.role_restrictions %}
+                <a href="{% url StudentScoreListDetail.url_name viewport=selected_viewport.slug pk=score.person_id %}">
+                    {{ score.person }}
+                </a>
+                {% else %}
+                    {{ score.person }}
+                {% endif %}
+            </td>
+            <td>{{ score.person.student.student_number }}</td>
+            <td>
+                {{ score }}{% if score.formula %}{{ OVERRIDE_INDICATOR }}{% endif %}
+            </td>
+            <td>{{ score.get_full_marks }}</td>
+            <td>
+                {% if score.is_public %}
+                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                {% else %}
+                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <td colspan="3">
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            ({{ object_list|length }} scores)
+        </td>
+    </tfoot>
+</table>
+{% endif %}
+
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}
+
+{% block gradebook_extra_info %}
+
+<div class="extra-info">
+<h3>Legend</h3>
+    <ul class="legend" style="list-style: none;">
+        <li><strong>{{ OVERRIDE_INDICATOR }}</strong> &mdash;
+            Scores that have overrides.</li>
+        <li><strong>{{ CALC_INDICATOR }}</strong> &mdash;
+            Scores that are being recalculated.</li>
+        <li><strong>{{ NS_INDICATOR }}</strong> &mdash;
+            Empty scores (no score).</li>
+    </ul>
+</div>
+
+
+{% if statistics %}
+    <div class="extra-info">
+    <h3>Statistics</h3>
+    <ul class="statistics" style="list-style: none;">
+        <li><strong>Count:</strong>
+            {{ statistics.count }}
+            </li>
+        <li><strong>Average:</strong>
+            {{ statistics.avg|floatformat:2 }}
+            </li>
+        {% if statistics.stddev %}
+            <li><strong>Std Dev:</strong>
+                {{ statistics.stddev|floatformat:2 }}
+                </li>
+        {% endif %}
+        <li><strong>Minimum:</strong>
+            {{ statistics.min|floatformat:2 }}
+        </li>
+        <li><strong>Maximum:</strong>
+            {{ statistics.max|floatformat:2 }}
+        </li>
+        {% if statistics.count_all %}
+            <li><strong>Count (with {{ NS_INDICATOR }}):</strong>
+                {{ statistics.count_all }}
+            </li>
+            <li><strong>Average (with {{ NS_INDICATOR }}):</strong>
+                {{ statistics.avg_all|floatformat:2 }}
+            </li>
+            {% if statistics.stddev_all %}
+                <li><strong>Std Dev (with {{ NS_INDICATOR }}):</strong>
+                    {{ statistics.stddev_all|floatformat:2 }}
+                </li>
+            {% endif %}
+       {% endif %}
+    </ul>
+    </div>
+{% endif %}
+
+{% if histogram %}
+    <div class="extra-info">
+        <img src="data:{{ histogram.mimetype }};base64,{{ histogram.base64 }}" width="250">
+    </div>
+{% endif %}
+{% endblock %}                                                                                    │1" 200 141356
+
+{# ########################################### #}

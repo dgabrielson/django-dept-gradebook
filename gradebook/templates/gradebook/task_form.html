@@ -1,0 +1,114 @@
+{% extends 'gradebook/task_list_edit.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Task form{% endblock %}
+{% block content_title %}Task form{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+{{ form.media }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% if task %}
+        {% url TaskUpdate.url_name viewport=selected_viewport.slug task=kwargs.task as page_url %}
+        {% if page_url and current_role in TaskUpdate.role_restrictions %}
+            <span class="divider">&gt;</span>
+            {% if page_url != request.path %}
+                <a href="{{ page_url }}">{{ task.name }}</a>
+            {% else %}
+                {{ task.name }}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% url TaskCreate.url_name viewport=selected_viewport.slug as page_url %}
+        {% if page_url and current_role in TaskCreate.role_restrictions %}
+            <span class="divider">&gt;</span>
+            {% if page_url != request.path %}
+                <a href="{{ page_url }}">Create new</a>
+            {% else %}
+                Create new
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_right_sidebar %}{% endblock %}
+
+{% block content_breadcrumbs %}
+<ul class="pagenav">
+    {% if current_role in FormulaList.role_restrictions %}
+        <li>
+            {% if kwargs.task %}
+                <a href="{% url FormulaList.url_name viewport=selected_viewport.slug task=task.slug %}">
+                    formulas explained
+                </a>
+            {% else %}
+                <a href="{% url FormulaList.url_name|add:'-create' viewport=selected_viewport.slug %}">
+                    formulas explained
+                </a>
+            {% endif %}
+        </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+    {% if duplicate %}
+        <p>
+            <strong>Please note</strong>
+            You should always <em>share</em> tasks with the same name between
+            sections, unless you have a <b>very</b> good reason.
+        </p>
+        <ul>
+            {% for task in task_duplicates %}
+                <li>
+                    <a href="{% url TaskUpdate.url_name viewport=selected_viewport.slug task=task.slug %}">
+                        Edit existing {{ task.name }}.
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+    <form enctype="multipart/form-data" action="" method="post" class="form">{% csrf_token %}
+        <table class="table-form">
+            {% if object.pk and selected_viewport.ledger.ledgerviewport_set.active|length > 10 %}
+                <tr class="submit-row visual-break">
+                    <td colspan="2">
+                        <input type="submit" value="Save">
+                    </td>
+                </tr>
+            {% endif %}
+            {% include 'includes/form.html' %}
+            <tr class="submit-row visual-break">
+                <td colspan="2">
+                    <input type="submit" value="{% block form_button %}Save{% endblock %}">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <script>
+        $('#id__select_all').click(function() {
+            if ($(this).is(':checked')) {
+                $('input.viewport-checkbox').attr('checked', true);
+            } else {
+                $('input.viewport-checkbox').attr('checked', false);
+            }
+        });
+    </script>
+{% endblock %}
+
+
+{# ########################################### #}

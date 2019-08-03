@@ -1,0 +1,107 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}Student search{% endblock %}
+{% block content_title %}Student search{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+{{ form.media }}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url StudentSearchFormView.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in StudentSearchFormView.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Student search</a>
+        {% else %}
+            Student search
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+    <form enctype="multipart/form-data" action="" method="post" class="form">{% csrf_token %}
+        <table class="table-form">
+            {% include 'includes/form.html' %}
+            <tr class="submit-row visual-break">
+                <td colspan="2">
+                    <script>
+                        function busy_action()
+                        {
+                            var btn = document.getElementById('show-busy-button');
+                            var busy = document.getElementById('busy-throbber');
+
+                            btn.style.display = "none";
+                            busy.style.display = "block";
+                        };
+                    </script>
+                    <input id="show-busy-button" onclick="busy_action();" type="submit" value="{% block form_button %}Search{% endblock %}">
+                    <span id="busy-throbber" style="text-align:center;text-indent:0em;display:none"><img src="{% static 'img/busy-loader.gif' %}" alt="progress indicator"></span>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    {% if search_done %}
+        <h2>Search results ({{ search_results|length }} total)</h2>
+        <table>
+            {% comment %}
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Student</th>
+                    <th>Standing</th>
+                    <th>Section<th>
+                </tr>
+            </thead>
+            {% endcomment %}
+            <tbody>
+                {% for student_role in search_results %}
+                    <tr style="line-height: 18pt;">
+                        <td>
+                            {% comment %}
+                            <a href="mailto:{{ student_role.person.emailaddress_set.active.0.address }}">
+                                {{ student_role.person }}
+                            </a>
+                            {% endcomment %}
+                            <a href="{% url StudentSearchScoreList.url_name viewport=selected_viewport.slug role_viewport_id=student_role.viewport_id pk=student_role.person_id %}">
+                                {{ student_role.person }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ student_role.person.student.student_number }}
+                        </td>
+                        <td>
+                            <span style="vertical-align: middle;">
+                                {% if student_role.active %}
+                                    <img src="{% static 'admin/img/icon-yes.svg' %}" alt="Good">
+                                {% else %}
+                                    <img src="{% static 'admin/img/icon-no.svg' %}" alt="Bad">
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            {# TODO: map viewport to section if possible? #}
+                            {# TODO: link to viewport if accessible #}
+                            {{ student_role.viewport }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################### #}

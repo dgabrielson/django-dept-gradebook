@@ -1,0 +1,165 @@
+{% extends 'gradebook/score_list.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}{{ task_object }} - Score edit{% endblock %}
+{% block content_title %}{{ task_object }}: Score edit{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url ScoreEditList.url_name viewport=selected_viewport.slug task=task_object.slug as page_url %}
+    {% if page_url and current_role in ScoreEditList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Edit</a>
+        {% else %}
+            Edit
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block content %}
+
+<ul class="pagenav">
+    {% if current_role in ScoreList.role_restrictions and current_role != 'student' %}
+        <li>
+            <a href="{% url ScoreList.url_name viewport=selected_viewport.slug task=task %}">
+                cancel edit
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+{% if task_object.formula %}
+<p>
+    Computed Score. Formula is {{ task_object.formula.get_type_display }}.
+</p>
+{% endif %}
+
+<form action="." method="POST">{% csrf_token %}
+<table>
+    {{ formset.management_form }}
+    <thead>
+        {% if not formset.is_valid and formset.non_form_errors%}
+            <tr class="form-errors">
+                <td colspan="6">
+                    <ul class=errorlist>
+                    {% for error in formset.non_form_errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            {% if task_object.formula %}<td></td>{% endif %}
+            <td colspan="3">
+                <input type="submit" name="Save All Scores" value="Save All Scores">
+            </td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>Student number</th>
+            <th>Score</th>
+            {% if task_object.formula %}
+                <th>
+                    Override
+                </th>
+            {% endif %}
+            <th>Full marks</th>
+            <th>Visible</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for form in formset %}
+        {% if not form.is_valid and form.non_field_errors%}
+            <tr class="form-errors">
+                <td colspan="6">
+                    <ul class=errorlist>
+                    {% for error in form.non_field_errors %}
+                        <li>
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        {% endif %}
+        {% with score=form.instance %}
+            <tr>
+                <td>
+                    {% if current_role in StudentScoreListDetail.role_restrictions %}
+                    <a href="{% url StudentScoreListDetail.url_name viewport=selected_viewport.slug pk=score.person_id %}">
+                    {{ score.person }}
+                </a>
+                {% else %}
+                    {{ score.person }}
+                {% endif %}
+                </td>
+                <td>{{ score.person.student.student_number }}</td>
+                <td>
+                    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                    {% if form.errors %}
+                        <ul for="{{ form.value.auto_id }}" class="errorlist" id="errors-{{ form.value.html_name }}">
+                            {% for error in form.value.errors %}
+                                <li>{{ error }}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {{ form.value }}
+                </td>
+                {% if task_object.formula %}
+                    <td>
+                        {{ form.override }}
+                    </td>
+                {% endif %}
+                <td>{{ score.get_full_marks }}</td>
+                <td>
+                    {% if score.is_public %}
+                        <img src="{% static 'admin/img/icon-yes.svg' %}" alt="Visible">
+                    {% else %}
+                        <img src="{% static 'admin/img/icon-no.svg' %}" alt="Hidden">
+                    {% endif %}
+                </td>
+            </tr>
+        {% endwith %}
+    {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            {% if task.task_object %}<td></td>{% endif %}
+            <td colspan="3">
+                <input type="submit" name="Save All Scores" value="Save All Scores">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                ({{ object_list|length }} scores)
+            </td>
+        </tr>
+    </tfoot>
+</table>
+</form>
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

@@ -1,0 +1,174 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+{% load humanize %}
+
+{# ########################################### #}
+
+{% block page_title %}Task list{% endblock %}
+{% block content_title %}Task list{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+<link href="{% static 'css/forms.css' %}" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url AllTaskList.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in AllTaskList.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Manage tasks</a>
+        {% else %}
+            Manage tasks
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block page_right_sidebar %}
+{# use the page_right_sidebar parent block to not show anything other than #}
+{# the filter in the right sidebar #}
+{% block gradebook_extra_info %}
+{% if selected_viewport.ledger.ledgerviewport_set.active|length > 1 %}
+<h2>Filter</h2>
+
+<input id="filter-all" type="radio" name="viewport-filter" value="-1" checked="checked"> Show all tasks <br>
+<input id="filter-none" type="radio" name="viewport-filter" value="0"> Show tasks not in any section <br>
+{% for viewport in selected_viewport.ledger.ledgerviewport_set.active %}
+<input class="viewport-filter" type="radio" name="viewport-filter" value="{{ viewport.pk }}" data-label="{{ viewport }}"> {{ viewport }} <br>
+{% endfor %}
+<script type="text/javascript">
+    $("#filter-all").change(function() {
+        $(".data-obj").show();
+        $("#filter-message").text("All tasks shown");
+    });
+    $("#filter-none").change(function() {
+        $(".data-obj").hide();
+        $(".data-obj[data-obj-viewports='']").show();
+        $("#filter-message").text("Tasks not in any section");
+    });
+    $(".viewport-filter").change(function() {
+        var value = $(this).val();
+        var label = $(this).attr("data-label");
+        $(".data-obj").hide();
+        $(".data-obj[data-obj-viewports~='" + value + "']").show();
+        $("#filter-message").text("Tasks for " + label );
+    });
+</script>
+{% endif %}
+{% endblock %}
+{% if selected_viewport.ledger.ledgerviewport_set.active|length == 1 %}
+    {{ block.super }}
+{% endif %}
+
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+
+    <p>
+        <strong>
+            <span id="filter-message">All tasks shown</span>
+        </strong>
+        <span>({{ object_list|length|apnumber }}
+               task{{ object_list|length|pluralize }} total).<span>
+    </p>
+    {# not a form -- just looks like one #}
+    <div class="form-container">
+        <table class="table-form formset">
+            <thead>
+                <tr class="table-formset-header">
+                    <td title="add">{# edit button #}
+                        {% if current_role in TaskCreate.role_restrictions %}
+                            <form action="{% url TaskCreate.url_name viewport=selected_viewport.slug %}">
+                                <button class="create">
+                                    <img alt="add" src="{% static "img/icons/plus.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <th>
+                        <label>Name</label>
+                    </th>
+                    <th>
+                        <label>Category</label>
+                    </th>
+                    <th>
+                        <label>Full Marks</label>
+                    </th>
+                    <th>
+                        <label>Visible</label>
+                    </th>
+                    <td>{# delete button #}</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in object_list %}
+                    <tr class="data-obj" data-obj-id="{{ task.pk }}" data-obj-viewports="{% for v in task.ledgerviewport_set.active %}{{ v.pk }}{% if not forloop.last %} {% endif %}{% endfor %}">
+                        <td class="row-midrule-after" title="edit">
+                            {% if current_role in TaskUpdate.role_restrictions %}
+                            <form action="{% url TaskUpdate.url_name viewport=selected_viewport.slug task=task.slug %}">
+                                <button class="update">
+                                    <img alt="edit" src="{% static "img/icons/three-bars.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                        <td class="row-midrule-after">
+                            {{ task.name }}
+                        </td>
+                        <td class="row-midrule-after" >
+                            {{ task.category }}
+                        </td>
+                        <td class="row-midrule-after" >
+                            {{ task.full_marks }}
+                        </td>
+                        <td class="row-midrule-after" >
+                            {% if task.is_public %}
+                                <img src="{% static 'admin/img/icon-yes.svg' %}" alt="True">
+                            {% else %}
+                                <img src="{% static 'admin/img/icon-no.svg' %}" alt="False">
+                            {% endif %}
+                        </td>
+                        <td class="row-midrule-after" title="delete">
+                            {% if current_role in TaskDelete.role_restrictions %}
+                            <form action="{% url TaskDelete.url_name viewport=selected_viewport.slug task=task.slug %}">
+                                <button class="delete">
+                                    <img alt="delete" src="{% static "img/icons/trashcan.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor  %}
+            </tbody>
+            {% if current_role in TaskCreate.role_restrictions %}
+                <tfoot>
+                    <tr>
+                        <td title="add">
+                            <form action="{% url TaskCreate.url_name viewport=selected_viewport.slug %}">
+                                <button class="create">
+                                    <img alt="add" src="{% static "img/icons/plus.svg" %}" style="width:1em; vertical-align:bottom;">
+                                </button>
+                            </form>
+                        </td>
+                        <td colspan="5"></td>
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    </div>
+
+
+{% endblock %}
+
+
+
+{# ########################################### #}

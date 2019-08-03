@@ -1,0 +1,16 @@
+
+jsonfield
+django-extra-views
+#django-autoslug
+dcg-autoslug
+#django-datetimepicker
+dcg-datetimepicker
+django-select2
+django-formtools
+
+python-gnuplot-data
+python-spreadsheet
+
+django-uofm
+django-dept-classes
+django-dept-students

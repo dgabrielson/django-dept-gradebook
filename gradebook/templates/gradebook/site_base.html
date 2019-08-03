@@ -1,0 +1,31 @@
+{% extends 'site_base.html' %}
+
+{# ########################################### #}
+
+{# Redifine column layout for this app #}
+
+{% block page_pre_classes %}col-lg-2 col-md-12{% endblock %}
+{% block page_main_classes %}col-lg-6 col-md-9{% endblock %}
+{% block page_aux_pre_extra %}<div class="col-lg-1"></div>{% endblock %}
+{% block page_aux_classes %}col-lg-3 col-md-3{% endblock %}
+
+
+{% block page_content_header %}{% block content_title %}{% endblock %}{% endblock %}
+{% block page_content_body %}
+
+{% block page_content_breadcrumbs %}
+    <div class="content_breadcrumb_shim">
+    {% block breadcrumbs %}
+    <a href="/">Home</a>
+    {% endblock %}
+    </div>
+{% endblock %}
+
+{% block content_breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+
+{% endblock page_content_body %}

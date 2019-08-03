@@ -1,0 +1,47 @@
+{% extends 'gradebook/download_form.html' %}
+
+{# ########################################### #}
+
+{% block page_title %}Export a Spreadsheet of Marks{% endblock %}
+{% block content_title %}Export a Spreadsheet of Marks{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url SpreadsheetExportFormView.url_name viewport=selected_viewport.slug as page_url %}
+    {% if page_url and current_role in SpreadsheetExportFormView.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Export marks</a>
+        {% else %}
+            Export marks
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Export{% endblock %}
+
+{% block form_submit_element %}
+
+{% if allow_download %}
+    <script>
+        function reload_page()
+        {
+            setTimeout(function() {
+                location.reload();
+            }, 250);
+        }
+    </script>
+    <a id='marks-download-link' onclick="reload_page()" href="{% url SpreadsheetDownloadView.url_name viewport=selected_viewport.slug %}">
+        Download the spreadsheet
+    </a>
+{% else %}
+    {{ block.super }}
+{% endif %}
+
+{% endblock %}
+
+{# ########################################### #}

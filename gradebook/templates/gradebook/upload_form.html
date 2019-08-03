@@ -1,0 +1,50 @@
+{% extends 'gradebook/section_landing.html' %}
+{% load static %}
+
+{# ########################################### #}
+
+{% block page_title %}UPLOAD form{% endblock %}
+{% block content_title %}UPLOAD form{% endblock %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+<!-- form media -->
+{{ form.media }}
+<!-- end form media -->
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content %}
+    {% block form_content %}
+    <form enctype="multipart/form-data" action="" method="post" class="form">{% csrf_token %}
+        <table class="table-form">
+            {% include 'includes/form.html' %}
+            <tr class="submit-row visual-break">
+                <td colspan="2">
+                    {% block form_submit_element %}
+                    <script>
+                        function busy_action()
+                        {
+                            var btn = document.getElementById('show-busy-button');
+                            var busy = document.getElementById('busy-throbber');
+
+                            btn.style.display = "none";
+                            busy.style.display = "block";
+                        };
+                    </script>
+                    <input id="show-busy-button" onclick="busy_action();" type="submit" value="{% block form_button %}Save{% endblock %}">
+                    <span id="busy-throbber" style="text-align:center;text-indent:0em;display:none"><img src="{% static 'img/busy-loader.gif' %}" alt="progress indicator"></span>
+                    {% endblock %}
+                </td>
+            </tr>
+        </table>
+    </form>
+    {% endblock %}
+{% endblock %}
+
+
+{# ########################################### #}

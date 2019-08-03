@@ -1,0 +1,12 @@
+('noop', 'Static override'),
+('sum', 'Sum'),
+('dro', 'Drop'),
+('bin', 'Bin'),
+('wei', 'Weight'),
+('rwt', 'Rank Weighted'),
+# These are not yet implemented:
+('max', 'Maximum'),
+('min', 'Minimum'),
+('icl', 'i>clicker'),
+('imo', 'If At Most'),
+('ile', 'If At Least'),

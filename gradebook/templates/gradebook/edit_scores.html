@@ -1,0 +1,113 @@
+{% extends 'gradebook_action_list.html' %}
+
+{# ########################################### #}
+
+{% block html_head %}
+{{ block.super }}
+<link href="{{ STATIC_URL }}css/forms.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block page_title %}Gradebook: Edit Scores{% endblock %}
+
+
+{# ########################################### #}
+
+{% block gradebook_extra_info %}
+
+{% include 'includes/rightbar_begin.html' with title=task.Category.Type %}
+<strong>Maximum Points available:</strong> {{ task.Full_Marks }}<br>
+<a href="{% url 'gradebook-task-stats' task.id %}">[statistics]</a>
+{% include 'includes/rightbar_end.html' %}
+
+{% endblock %}
+
+{# ########################################### #}
+
+
+{% block content %}
+<ul class="pagenav">
+    <li>
+        <a href="{% url 'gradebook-show-task' task.id %}">&larr; Back to the task (cancel)</a>
+    </li>
+</ul>
+
+<form action="." method="POST">{% csrf_token %}
+
+
+<center>
+<table>
+    {{ formset.management_form }}
+    {% if not formset.is_valid and formset.non_form_errors%}
+        <tr class="form-errors">
+            <td colspan="3">
+                <ul class=errorlist>
+                {% for error in formset.non_form_errors %}
+                    <li>
+                        {{ error }}
+                    </li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+    {% endif %}
+    <tr>
+        <th align="left">Student Name</th>
+        <th align="left">Student Number</th>
+        <th align="left">{{ task.Category.Type }} Score</th>
+    </tr>
+
+
+{# for pair in student_formset #}
+{# with student=pair.0 form=pair.1 #}
+{% for form in formset %}
+    {% if not form.is_valid and form.non_field_errors%}
+        <tr class="form-errors">
+            <td colspan="3">
+                <ul class=errorlist>
+                {% for error in form.non_field_errors %}
+                    <li>
+                        {{ error }}
+                    </li>
+                {% endfor %}
+                </ul>
+            </td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td>{{ form.instance.Student }}</td>
+        <td>{{ form.instance.Student.student_number }}</td>
+        <td>
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+            {% if form.Score.errors %}
+                <ul for="{{ form.Score.auto_id }}" class="errorlist" id="errors-{{ form.Score.html_name }}">
+                    {% for error in form.Score.errors %}
+                        <li>{{ error }}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {{ form.Score }}
+        </td>
+    </tr>
+{# endwith #}
+{% endfor %}
+
+    <tr>
+        <td></td>
+        <td></td>
+        <td>
+            <input type="submit" name="Save All Scores" value="Save All Scores">
+        </td>
+    </tr>
+</table>
+
+
+</center>
+</form>
+
+{% endblock %}
+
+
+{# ########################################### #}

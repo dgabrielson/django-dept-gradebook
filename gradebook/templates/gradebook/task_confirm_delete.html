@@ -1,0 +1,84 @@
+{% extends 'gradebook/task_form.html' %}
+{% load humanize static %}
+
+{# ########################################### #}
+
+{% block page_title %}Delete Task - {{ object }}{% endblock %}
+{% block content_title %}Delete Task: {{ object }}{% endblock %}
+
+{# ########################################### #}
+
+{% block form_button %}Delete{% endblock %}
+
+{# ########################################### #}
+
+{% block page_breadcrumbs %}
+    {{ block.super }}
+    {% url TaskDelete.url_name viewport=selected_viewport.slug task=task.slug as page_url %}
+    {% if page_url and current_role in TaskDelete.role_restrictions %}
+        <span class="divider">&gt;</span>
+        {% if page_url != request.path %}
+            <a href="{{ page_url }}">Delete</a>
+        {% else %}
+            Delete
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{# ########################################### #}
+
+{% block content_breadcrumbs %}
+<ul class="pagenav">
+    {% if current_role in AllTaskList.role_restrictions %}
+        <li>
+            <a href="{% url AllTaskList.url_name viewport=selected_viewport.slug %}">
+                Cancel and go back
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+
+{# ########################################### #}
+
+{% block content %}
+    <p>
+        {% if task.ledgerviewport_set.active|length > 0 %}
+            <strong>WARNING</strong>:
+            This task is currently associated with
+            {{ task.ledgerviewport_set.active|length|apnumber }}
+            section{{ task.ledgerviewport_set.active|length|pluralize }}.
+            If there are any student grades associated with this task,
+            deleting this task will <em>permanantly destroy</em>
+            those grades also.<br>
+            Do not delete this unless you are <strong>absolutely sure</strong>
+             it is safe.
+        {% else %}
+            This task is currently not associated with any sections.
+            (It is <em>probably</em> safe to delete this task.)
+        {% endif %}
+    </p>
+    <form enctype="multipart/form-data" action="" method="post" class="form">{% csrf_token %}
+        <p id="show-busy-text">
+            Are you <strong>sure</strong> you want to delete this task?
+            <script>
+                function busy_action()
+                {
+                    var btn = document.getElementById('show-busy-button');
+                    var busy = document.getElementById('busy-throbber');
+                    var text = document.getElementById('show-busy-text');
+
+                    btn.style.display = "none";
+                    text.style.display = "none";
+                    busy.style.display = "block";
+                };
+            </script>
+            <input id="show-busy-button" onclick="busy_action();" type="submit" value="Yes, Delete">
+            <div id="busy-throbber" style="text-align:center;text-indent:0em;display:none"><img src="{% static 'img/busy-loader.gif' %}" alt="progress indicator"></div>
+        </p>
+    </form>
+
+{% endblock %}
+
+{# ########################################### #}
